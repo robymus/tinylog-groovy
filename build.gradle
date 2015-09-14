@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+group = 'io.r2'
+version = '0.1'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+    maven { url 'https://pm.apn2.com/nexus/content/repositories/public/' }    
+}
+
+dependencies {
+    compile(
+        "org.codehaus.groovy:groovy-all:2.4.4+",
+        "io.r2:tinylog:1.0.1-plugin" // "org.tinylog:tinylog:1.0.1"
+    )
+}
+
+// deploy with gradle publish -PdeployUser=xxx -PdeployPass=yyy
+if (project.hasProperty('deployUser') && project.hasProperty('deployPass')) {
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from project.components.java
+            }
+        }
+        repositories {
+            maven {
+                credentials {
+                    username deployUser
+                    password deployPass
+                }
+                url 'https://pm.apn2.com/nexus/content/repositories/pub-releases'
+            }
+        }
+    }
+}
